@@ -3,13 +3,14 @@ package gorm
 import (
 	"database/sql"
 
+	"github.com/Robin-ZMH/gorm/dialect"
 	"github.com/Robin-ZMH/gorm/log"
 )
 
 type Engine struct {
-	db *sql.DB
+	db      *sql.DB
+	dialect dialect.Dialect
 }
-
 
 // NewEngine create a instance of Engine
 // connect database and ping it to test whether it's alive
@@ -24,7 +25,13 @@ func NewEngine(driver, dbName string) (e *Engine, err error) {
 		log.Error(err)
 		return
 	}
-	e = &Engine{db: db}
+
+	dialect, ok := dialect.GetDialect(driver)
+	if !ok {
+		log.Errorf("dialect %s Not Found", driver)
+		return
+	}
+	e = &Engine{db: db, dialect: dialect}
 	log.Info("Connect database success")
 	return
 }
@@ -38,7 +45,6 @@ func (engine *Engine) Close() {
 }
 
 // NewSession creates a new session for next operations
-func (engine *Engine) NewSession() *Session {
-	return NewSession(engine.db)
+func (e *Engine) NewSession() *Session {
+	return NewSession(e.db, e.dialect)
 }
-

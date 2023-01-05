@@ -1,6 +1,10 @@
-package dialect
+package table
 
-import "reflect"
+import (
+	"reflect"
+
+	"github.com/Robin-ZMH/gorm/dialect"
+)
 
 // Field represents a column of database
 type Field struct {
@@ -18,14 +22,10 @@ type Table struct {
 	fieldMap   map[string]*Field // [FieldName]Field
 }
 
-func (t *Table) GetField(name string) *Field {
-	return t.fieldMap[name]
-}
-
-func Parse(dest any, dialect Dialect) *Table {
-	modelTyp := reflect.Indirect(reflect.ValueOf(dest)).Type()
+func NewTable(model any, dialect dialect.Dialect) *Table {
+	modelTyp := reflect.Indirect(reflect.ValueOf(model)).Type()
 	table := &Table{
-		Model:    dest,
+		Model:    model,
 		Name:     modelTyp.Name(),
 		fieldMap: make(map[string]*Field),
 	}
@@ -46,4 +46,8 @@ func Parse(dest any, dialect Dialect) *Table {
 		table.fieldMap[field.Name] = field
 	}
 	return table
+}
+
+func (t *Table) GetField(name string) *Field {
+	return t.fieldMap[name]
 }
