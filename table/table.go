@@ -22,10 +22,10 @@ type Table struct {
 	fieldMap   map[string]*Field // [FieldName]Field
 }
 
-func NewTable(model any, dialect dialect.Dialect) *Table {
-	modelTyp := reflect.Indirect(reflect.ValueOf(model)).Type()
+func NewTable(obj any, dialect dialect.Dialect) *Table {
+	modelTyp := reflect.Indirect(reflect.ValueOf(obj)).Type()
 	table := &Table{
-		Model:    model,
+		Model:    obj,
 		Name:     modelTyp.Name(),
 		fieldMap: make(map[string]*Field),
 	}
@@ -51,3 +51,13 @@ func NewTable(model any, dialect dialect.Dialect) *Table {
 func (t *Table) GetField(name string) *Field {
 	return t.fieldMap[name]
 }
+
+// get all field values of one model instance
+func (t *Table) FieldValues() (fieldVals []any) {
+	refVal := reflect.Indirect(reflect.ValueOf(t.Model))
+	for _, name := range t.FieldNames {
+		fieldVals = append(fieldVals, refVal.FieldByName(name).Interface())
+	}
+	return 
+}
+

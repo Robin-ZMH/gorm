@@ -55,6 +55,7 @@ func values(vals ...any) (sqlFmt string, vars []any) {
 		vars = append(vars, val...)
 	}
 	sqlFmt = strings.Join(sqls, ", ")
+	sqlFmt = "VALUES " + sqlFmt
 	return
 }
 
