@@ -1,6 +1,9 @@
 package clause
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Type int
 
@@ -9,10 +12,11 @@ type Clause struct {
 	sqlVars map[Type][]interface{}
 }
 
-func (c *Clause) Set(name Type, vars ...interface{}) {
+func (c *Clause) Set(name Type, vars ...any) {
+	fmt.Println(vars)
 	if c.sql == nil {
 		c.sql = make(map[Type]string)
-		c.sqlVars = make(map[Type][]interface{})
+		c.sqlVars = make(map[Type][]any)
 	}
 	sqlFmt, vars := generators[name](vars)
 	c.sql[name] = sqlFmt
@@ -25,7 +29,7 @@ func (c *Clause) Build(keywords ...Type) (sqlFmt string, vals []any) {
 		if _, ok := c.sql[key]; ok {
 			sqls = append(sqls, c.sql[key])
 			vals = append(vals, c.sqlVars[key]...)
-		}	
+		}
 	}
 	sqlFmt = strings.Join(sqls, " ")
 	return

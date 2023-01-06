@@ -65,17 +65,17 @@ func _select(vals ...any) (sqlFmt string, vars []any) {
 	return
 }
 
-func limit(vals ...interface{}) (sqlFmt string, vars []any) {
+func limit(vals ...any) (sqlFmt string, vars []any) {
 	return "LIMIT ?", vals
 }
 
-func where(values ...interface{}) (sqlFmt string, vars []any) {
+func where(values ...any) (sqlFmt string, vars []any) {
 	// WHERE $desc
 	desc, vars := values[0], values[1:]
 	sqlFmt = fmt.Sprintf("WHERE %s", desc)
 	return
 }
 
-func orderBy(values ...interface{}) (sqlFmt string, vars []any) {
+func orderBy(values ...any) (sqlFmt string, vars []any) {
 	return fmt.Sprintf("ORDER BY %s", values[0]), vars
 }
