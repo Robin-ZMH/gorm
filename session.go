@@ -91,7 +91,7 @@ func (s *Session) CreateTable() error {
 	}
 
 	desc := strings.Join(columns, ",")
-	_, err := s.Raw(fmt.Sprintf("CREATE TABLE %s (%s);", s.Table.Name, desc)).Exec()
+	_, err := s.Raw(fmt.Sprintf("CREATE TABLE %s(%s);", s.Table.Name, desc)).Exec()
 	return err
 }
 

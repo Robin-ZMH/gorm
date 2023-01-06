@@ -2,7 +2,10 @@ package gorm
 
 import (
 	"database/sql"
+	"fmt"
+	"reflect"
 
+	"github.com/Robin-ZMH/gorm/clause"
 	"github.com/Robin-ZMH/gorm/dialect"
 	"github.com/Robin-ZMH/gorm/log"
 )
@@ -47,4 +50,20 @@ func (engine *Engine) Close() {
 // NewSession creates a new session for next operations
 func (e *Engine) NewSession() *Session {
 	return NewSession(e.db, e.dialect)
+}
+
+func Test() {
+	var c clause.Clause
+	c.Set(clause.LIMIT, 3)
+	c.Set(clause.SELECT, "User", []string{"*"})
+	c.Set(clause.WHERE, "Name = ?", "Tom")
+	c.Set(clause.ORDERBY, "Age ASC")
+	sql, vars := c.Build(clause.SELECT, clause.WHERE, clause.ORDERBY, clause.LIMIT)
+	log.Info(fmt.Sprintf(sql, vars))
+	if sql != "SELECT * FROM User WHERE Name = ? ORDER BY Age ASC LIMIT ?" {
+		log.Error("failed to build SQL")
+	}
+	if !reflect.DeepEqual(vars, []interface{}{"Tom", 3}) {
+		log.Error("failed to build SQLVars")
+	}
 }
